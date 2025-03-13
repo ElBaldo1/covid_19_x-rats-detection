@@ -1,0 +1,12 @@
+# Ignore image files
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Ignore the entire dataset directory if it contains images or large files
+COVID-Data-Radiography/
+
+# Ignore log files and TensorBoard logs
+*.log
+runs/
