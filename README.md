@@ -52,3 +52,7 @@ python predict.py manual-test/image1.jpg
 streamlit run streamlit_app.py
 ```
 Upload a chest X-ray image to classify it live as COVID-positive or COVID-negative.
+
+---
+
+📌 GitHub Repository: [github.com/ElBaldo1/covid_19_x-rats-detection](https://github.com/ElBaldo1/covid_19_x-rats-detection)
