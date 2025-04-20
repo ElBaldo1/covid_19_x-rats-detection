@@ -4,11 +4,21 @@
 *.jpeg
 *.gif
 
-# Ignore the entire dataset directory if it contains images or large files
+# Ignore the entire dataset directory and model file
 COVID-Data-Radiography/
-best_model.pth
 COVID-Data-Radiography.zip
+best_model.pth
 
-# Ignore log files and TensorBoard logs
+# Ignore logs and TensorBoard
 *.log
 runs/
+
+# Ignore outputs and training logs
+outputs/
+training_log.csv
+
+# Ignore system/IDE cache files
+.DS_Store
+__pycache__/
+.ipynb_checkpoints/
+.env
