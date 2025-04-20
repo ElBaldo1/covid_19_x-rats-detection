@@ -6,6 +6,8 @@
 
 # Ignore the entire dataset directory if it contains images or large files
 COVID-Data-Radiography/
+best_model.pth
+COVID-Data-Radiography.zip
 
 # Ignore log files and TensorBoard logs
 *.log
