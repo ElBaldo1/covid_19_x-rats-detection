@@ -4,6 +4,10 @@
 *.jpeg
 *.gif
 
+# Ignore IDE config (JetBrains/PyCharm)
+.idea/
+
+
 # Ignore the entire dataset directory and model file
 COVID-Data-Radiography/
 COVID-Data-Radiography.zip

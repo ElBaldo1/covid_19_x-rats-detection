@@ -20,7 +20,11 @@ transform = transforms.Compose([
 @st.cache_resource
 def load_model():
     model = RadiographyCNN()
-    model.load_state_dict(torch.load("best_model.pth", map_location="cpu"))
+    model.load_state_dict(torch.load(
+        "best_model.pth",
+        map_location="cpu",
+        weights_only=True
+    ))
     model.eval()
     return model
 

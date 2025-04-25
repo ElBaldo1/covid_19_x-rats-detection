@@ -1,8 +1,3 @@
-"""
-COVID‑19 Chest X‑ray Classification – streamlined script
-(removed TensorBoard logic; Streamlit will be used for demo)
-"""
-
 # ============================================================
 # 1. Imports
 # ============================================================
@@ -121,43 +116,87 @@ def run_epoch(model, loader, train=True):
     return loss_sum/len(loader), correct/len(loader.dataset)
 
 # ============================================================
-# 7. Detailed evaluation
+# 7. Detailed evaluation & logging
 # ============================================================
-
 def evaluate_detailed(model, loader):
     model.eval(); preds, labels = [], []
     with torch.no_grad():
         for x, y in loader:
             preds.extend(model(x.to(DEVICE)).argmax(1).cpu().numpy())
             labels.extend(y.numpy())
-    print("\nClassification report:\n", classification_report(labels, preds, target_names=list(class_mapping.values())))
+    report = classification_report(labels, preds, target_names=list(class_mapping.values()))
+    print("\nClassification report:\n", report)
+    with open("outputs/classification_report.txt", "w") as f:
+        f.write(report)
     cm = confusion_matrix(labels, preds)
     plt.figure(figsize=(4,4))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=list(class_mapping.values()), yticklabels=list(class_mapping.values()))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+                xticklabels=list(class_mapping.values()),
+                yticklabels=list(class_mapping.values()))
     plt.xlabel("Predicted"); plt.ylabel("Actual"); plt.title("Confusion Matrix"); plt.tight_layout()
     plt.savefig("outputs/cm.png", dpi=300)
-    plt.show()
+    plt.close()
 
 # ============================================================
 # 8. Main
 # ============================================================
 if __name__ == "__main__":
-    epochs, best_val, patience = 20, float("inf"), 3
-    no_imp = 0
-    for ep in range(epochs):
-        tl, ta = run_epoch(model, train_dl, True)
-        vl, va = run_epoch(model, val_dl, False)
-        scheduler.step(vl)
-        print(f"Ep{ep+1}: TL={tl:.4f} TA={ta:.4f} | VL={vl:.4f} VA={va:.4f}")
-        if vl < best_val:
-            best_val, no_imp = vl, 0
-            torch.save(model.state_dict(), best_model_path)
-        else:
-            no_imp += 1
-            if no_imp >= patience:
-                print("Early stopping"); break
+    # Skip training if weights exist
+    if os.path.exists(best_model_path):
+        print("Found existing model weights, skipping training.")
+        model.load_state_dict(torch.load(
+            best_model_path,
+            map_location = DEVICE,
+            weights_only = True
+                                ))
+    else:
+        # prepare CSV for logging
+        csv_path = os.path.join("outputs", "training_log.csv")
+        with open(csv_path, "w", newline="") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["epoch", "train_loss", "train_acc", "val_loss", "val_acc", "lr"])
 
-    model.load_state_dict(torch.load(best_model_path, map_location=DEVICE))
+            epochs, best_val, patience = 20, float("inf"), 3
+            no_imp = 0
+            train_losses, val_losses = [], []
+            train_accs, val_accs = [], []
+
+            for ep in range(1, epochs+1):
+                tl, ta = run_epoch(model, train_dl, True)
+                vl, va = run_epoch(model, val_dl, False)
+                scheduler.step(vl)
+                train_losses.append(tl); val_losses.append(vl)
+                train_accs.append(ta); val_accs.append(va)
+                print(f"Ep{ep}: TL={tl:.4f} TA={ta:.4f} | VL={vl:.4f} VA={va:.4f}")
+
+                # log to CSV
+                writer.writerow([ep, f"{tl:.4f}", f"{ta:.4f}", f"{vl:.4f}", f"{va:.4f}"])
+
+                if vl < best_val:
+                    best_val, no_imp = vl, 0
+                    torch.save(model.state_dict(), best_model_path)
+                else:
+                    no_imp += 1
+                    if no_imp >= patience:
+                        print("Early stopping")
+                        break
+
+        # Plot & save training curves
+        plt.figure(figsize=(12,5))
+        plt.subplot(1,2,1)
+        plt.plot(train_losses, label='Train Loss')
+        plt.plot(val_losses, label='Val Loss')
+        plt.title('Loss vs Epoch'); plt.xlabel('Epoch'); plt.ylabel('Loss'); plt.legend()
+        plt.subplot(1,2,2)
+        plt.plot(train_accs, label='Train Acc')
+        plt.plot(val_accs, label='Val Acc')
+        plt.title('Accuracy vs Epoch'); plt.xlabel('Epoch'); plt.ylabel('Accuracy'); plt.legend()
+        plt.tight_layout()
+        plt.savefig("outputs/training_curves.png", dpi=300)
+        plt.close()
+
+    # Evaluate final model
     test_loss, test_acc = run_epoch(model, test_dl, False)
     print(f"Test Loss={test_loss:.4f}, Test Acc={test_acc:.4f}")
     evaluate_detailed(model, test_dl)
+
