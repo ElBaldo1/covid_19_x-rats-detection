@@ -101,7 +101,6 @@ os.makedirs("outputs", exist_ok=True)
 # ============================================================
 # 6. Training helpers
 # ============================================================
-
 def run_epoch(model, loader, train=True):
     if train: model.train(); optimizer.zero_grad()
     else: model.eval()
@@ -148,9 +147,9 @@ if __name__ == "__main__":
             best_model_path,
             map_location = DEVICE,
             weights_only = True
-                                ))
+        ))
     else:
-        # prepare CSV for logging
+        # Prepare CSV for logging
         csv_path = os.path.join("outputs", "training_log.csv")
         with open(csv_path, "w", newline="") as csvfile:
             writer = csv.writer(csvfile)
@@ -165,12 +164,13 @@ if __name__ == "__main__":
                 tl, ta = run_epoch(model, train_dl, True)
                 vl, va = run_epoch(model, val_dl, False)
                 scheduler.step(vl)
+                lr = optimizer.param_groups[0]['lr']
                 train_losses.append(tl); val_losses.append(vl)
                 train_accs.append(ta); val_accs.append(va)
                 print(f"Ep{ep}: TL={tl:.4f} TA={ta:.4f} | VL={vl:.4f} VA={va:.4f}")
 
-                # log to CSV
-                writer.writerow([ep, f"{tl:.4f}", f"{ta:.4f}", f"{vl:.4f}", f"{va:.4f}"])
+                # Log to CSV
+                writer.writerow([ep, f"{tl:.4f}", f"{ta:.4f}", f"{vl:.4f}", f"{va:.4f}", f"{lr:.6f}"])
 
                 if vl < best_val:
                     best_val, no_imp = vl, 0
