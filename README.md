@@ -2,13 +2,29 @@
 
 This project classifies chest X-ray images as COVID-positive or COVID-negative using a convolutional neural network in PyTorch.
 
-## Structure
-- `import_Data.py`: dataset loading using `ImageFolder`
-- `covid_classification.py`: training, evaluation, confusion matrix
-- `predict.py`: command-line interface for single image inference
-- `streamlit_app.py`: interactive demo using Streamlit
-- `training_log.csv`: training & validation metrics
-- `environment.yml`: Conda environment for reproducibility
+
+## 📂 Project layout
+
+```
+.
+├── covid_classification.py   # training + evaluation
+├── predict.py                # CLI inference: python predict.py <img>
+├── streamlit_app.py          # Streamlit front‑end
+├── import_Data.py            # CTDataset wrapper
+├── outputs/                  # auto‑generated weights + metrics
+│   ├── best_model.pth
+│   ├── classification_report.txt
+│   ├── cm.png
+│   ├── training_curves.png
+│   └── training_log.csv
+├── COVID-Data-Radiography/   # dataset root (after unzip)
+│   ├── no/
+│   └── yes/
+├── manual-test/              # 6 images for sanity checks
+├── environment.yml           # Conda environment
+└── README.md
+```
+
 
 ## Dataset
 - `COVID-Data-Radiography/no/` — 1270 training images (COVID-negative)
@@ -25,17 +41,17 @@ conda activate covid_proj
 To run `predict.py` or the Streamlit app, download the pretrained model and unzip the dataset:
 
 ```bash
-# Download best model (80 MB)
-wget "https://universitelibrebruxelles-my.sharepoint.com/:u:/g/personal/antonio_baldari_ulb_be/EYF1ng7UuOZFnCuQHxyuTN0Brj2FU6G_Scssv3a629am7Q?e=le94A4" -O best_model.pth
+# Download best model 
+wget "https://universitelibrebruxelles-my.sharepoint.com/:u:/g/personal/antonio_baldari_ulb_be/Ebtd2VterepMkv3GaYyifkUB6sPdmryJrQ8C62nkz0VBpQ" -O best_model.pth
 
-# Download dataset (~100 MB zipped)
-wget "https://universitelibrebruxelles-my.sharepoint.com/:u:/g/personal/antonio_baldari_ulb_be/EUsuXgv53vVPuY9Su8gDRIIBCp7u55ULlecR4YuO21hEIA?e=s6A1Fm" -O COVID-Data-Radiography.zip
+# Download dataset (zipped)
+wget "https://universitelibrebruxelles-my.sharepoint.com/:u:/g/personal/antonio_baldari_ulb_be/EUsuXgv53vVPuY9Su8gDRIIBb9qZsLrx1XwDduUH5ScVVA" -O COVID-Data-Radiography.zip
 
 # Unzip# Unzip\unzip COVID-Data-Radiography.zip
 ```
 If the above commands fail, open the links below in a browser and download manually:
-- [best_model.pth](https://universitelibrebruxelles-my.sharepoint.com/:u:/g/personal/antonio_baldari_ulb_be/EYF1ng7UuOZFnCuQHxyuTN0Brj2FU6G_Scssv3a629am7Q?e=le94A4)
-- [COVID-Data-Radiography.zip](https://universitelibrebruxelles-my.sharepoint.com/:u:/g/personal/antonio_baldari_ulb_be/EUsuXgv53vVPuY9Su8gDRIIBCp7u55ULlecR4YuO21hEIA?e=s6A1Fm)
+- [best_model.pth](https://universitelibrebruxelles-my.sharepoint.com/:u:/g/personal/antonio_baldari_ulb_be/Ebtd2VterepMkv3GaYyifkUB6sPdmryJrQ8C62nkz0VBpQ)
+- [COVID-Data-Radiography.zip](https://universitelibrebruxelles-my.sharepoint.com/:u:/g/personal/antonio_baldari_ulb_be/EUsuXgv53vVPuY9Su8gDRIIBb9qZsLrx1XwDduUH5ScVVA)
 
 ## 🧪 Train the model
 ```bash
