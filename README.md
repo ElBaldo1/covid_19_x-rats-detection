@@ -12,7 +12,6 @@ This project classifies chest X-ray images as COVID-positive or COVID-negative u
 ├── streamlit_app.py          # Streamlit front‑end
 ├── import_Data.py            # CTDataset wrapper
 ├── outputs/                  # auto‑generated weights + metrics
-│   ├── best_model.pth
 │   ├── classification_report.txt
 │   ├── cm.png
 │   ├── training_curves.png
@@ -21,6 +20,7 @@ This project classifies chest X-ray images as COVID-positive or COVID-negative u
 │   ├── no/
 │   └── yes/
 ├── manual-test/              # 6 images for sanity checks
+├── best_model.pth   
 ├── environment.yml           # Conda environment
 └── README.md
 ```
